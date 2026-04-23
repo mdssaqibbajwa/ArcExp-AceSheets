@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-dark: #1D8A3E;
+      --green: #2EAE4E;
+      --green-light: #E8F5EC;
+      --green-glow: rgba(46, 174, 78, 0.12);
+      --orange: #E8602C;
+      --orange-light: #FEF0EB;
+      --orange-dark: #C44A1C;
+      --amber: #D4860B;
+      --amber-light: #FFF8EB;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F1F3F5;
+      --gray-200: #DEE2E6;
+      --gray-400: #868E96;
+      --gray-600: #495057;
+      --gray-800: #212529;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
+      padding: 22px 20px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 30px;
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.3px;
+      position: relative;
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 4px;
+      font-weight: 400;
+      position: relative;
+    }
+
+    /* ── Content ── */
+    .content {
+      padding: 18px 16px 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--gray-400);
+      margin-bottom: 10px;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--gray-200);
+      margin: 14px 0;
+    }
+
+    /* ── Row Limit Control ── */
+    .row-limit-card {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .row-limit-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .row-limit-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .row-limit-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .row-limit-hint {
+      font-size: 10.5px;
+      color: var(--gray-400);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .row-limit-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .row-limit-input {
+      width: 68px;
+      padding: 5px 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+      text-align: center;
+    }
+
+    .row-limit-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+
+    .row-preset-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .row-preset-btn {
+      padding: 4px 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .row-preset-btn:hover {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green-dark);
+    }
+
+    /* ── Option Cards ── */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .option-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+
+    .option-card.checked {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .option-card input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      border: 2px solid var(--gray-200);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      margin-top: 1px;
+    }
+
+    .option-card.checked .checkmark {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .checkmark svg {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .option-card.checked .checkmark svg {
+      opacity: 1;
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    .option-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      line-height: 1.25;
+    }
+
+    .option-hint {
+      font-size: 10.5px;
+      color: var(--gray-400);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin-left: 5px;
+      position: relative;
+      top: -1px;
+    }
+
+    .badge-orange {
+      background: var(--orange-light);
+      color: var(--orange);
+    }
+
+    .badge-amber {
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    .badge-green {
+      background: var(--green-light);
+      color: var(--green-dark);
+    }
+
+    /* ── Caution box ── */
+    .caution-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      background: var(--amber-light);
+      border: 1px solid rgba(212, 134, 11, 0.2);
+      border-radius: 7px;
+      padding: 9px 11px;
+      margin: 0 0 6px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--amber);
+    }
+
+    .caution-box .caution-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    /* ── Button wrapper ── */
+    .btn-area {
+      margin-top: 16px;
+    }
+
+    /* ── Export Button ── */
+    .export-btn {
+      width: 100%;
+      padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-md), 0 2px 8px rgba(46, 174, 78, 0.25);
+      letter-spacing: 0.2px;
+    }
+
+    .export-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md), 0 4px 16px rgba(46, 174, 78, 0.35);
+    }
+
+    .export-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .export-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .export-btn.loading {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+      box-shadow: var(--shadow-md), 0 2px 8px rgba(232, 96, 44, 0.3);
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2.5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+      position: relative;
+      top: -1px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── Status ── */
+    #status {
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status-box {
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status-success {
+      background: var(--green-light);
+      border: 1px solid rgba(46, 174, 78, 0.25);
+      color: var(--green-dark);
+    }
+
+    .status-error {
+      background: var(--orange-light);
+      border: 1px solid rgba(232, 96, 44, 0.25);
+      color: #B5401A;
+    }
+
+    .status-loading {
+      background: var(--orange-light);
+      border: 1px solid rgba(232, 96, 44, 0.15);
+      color: var(--orange);
+      font-style: italic;
+    }
+
+    .status-title {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .drive-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--green-dark);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12.5px;
+      margin-top: 6px;
+    }
+
+    .drive-link:hover {
+      text-decoration: underline;
+    }
+
+    .file-name {
+      font-size: 11.5px;
+      color: var(--gray-400);
+      word-break: break-all;
+      margin-top: 4px;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 14px 16px;
+      text-align: center;
+      font-size: 10.5px;
+      color: var(--gray-400);
+      border-top: 1px solid var(--gray-100);
+    }
+
+    .footer-accent {
+      color: var(--green);
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="header-title">Architecture Exporter</div>
+    <div class="header-sub">Extract spreadsheet structure to JSON</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── ROW LIMIT ── -->
+    <div class="section-label">Scan Depth</div>
+    <div class="row-limit-card">
+      <div class="row-limit-body">
+        <div class="row-limit-label">
+          Row Limit
+          <span class="badge badge-green" id="rowLimitBadge">100 rows</span>
+        </div>
+        <div class="row-limit-hint">Max rows scanned for formulas, validation, notes &amp; formats. Capped at actual
+          sheet data.</div>
+        <div class="row-limit-controls">
+          <input type="number" id="rowLimitInput" class="row-limit-input" value="100" min="1" max="10000">
+          <div class="row-preset-btns">
+            <button class="row-preset-btn" onclick="setRowLimit(50)">50</button>
+            <button class="row-preset-btn" onclick="setRowLimit(100)">100</button>
+            <button class="row-preset-btn" onclick="setRowLimit(500)">500</button>
+            <button class="row-preset-btn" onclick="setRowLimit(1000)">1k</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- ── STRUCTURE ── -->
+    <div class="section-label">Structure</div>
+    <div class="options-list">
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkHeaders" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Headers &amp; Sample Data</div>
+          <div class="option-hint">Column headers + first 5 data rows per sheet</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkNamedRanges" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Named Ranges</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkSheetMeta" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Sheet Metadata</div>
+          <div class="option-hint">Frozen rows/cols, hidden sheets, tab colors, dimensions</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkMergedCells" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Merged Cells</div>
+        </div>
+      </label>
+
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- ── LOGIC ── -->
+    <div class="section-label">Logic &amp; Rules</div>
+    <div class="options-list">
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkFormulas" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Formulas &amp; Dependencies</div>
+          <div class="option-hint">All formulas + cross-sheet dependency map</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkDataValidation" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Data Validation <span class="badge badge-orange">Row-limited</span></div>
+          <div class="option-hint">Dropdown lists with sources, input rules, and help text</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkCondFormat" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Conditional Formatting</div>
+          <div class="option-hint">All rules with ranges, criteria types, and values</div>
+        </div>
+      </label>
+
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- ── VISUALS ── -->
+    <div class="section-label">Visuals &amp; Annotations</div>
+    <div class="options-list">
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkCharts" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Charts</div>
+          <div class="option-hint">Chart type, ID, and data ranges per chart</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkNumberFormats" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Number Formats</div>
+          <div class="option-hint">Currency, date, percentage patterns per column</div>
+        </div>
+      </label>
+
+      <label class="option-card checked">
+        <input type="checkbox" id="chkNotes" checked>
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Notes &amp; Comments</div>
+        </div>
+      </label>
+
+    </div>
+
+    <!-- ── Caution + Extras + Button ── -->
+    <div class="btn-area">
+      <div class="caution-box" id="dvCaution">
+        <span class="caution-icon">&#9888;</span>
+        <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
+          Script limitations. All other options are fast.</span>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- ── EXTRAS ── -->
+      <div class="section-label">Extras</div>
+      <div class="options-list" style="margin-bottom:16px;">
+        <label class="option-card" id="card-downloadXlsx">
+          <input type="checkbox" id="chkDownloadXlsx">
+          <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg></div>
+          <div class="option-text">
+            <div class="option-name">Download as Excel</div>
+            <div class="option-hint">Also save a .xlsx copy alongside the JSON export</div>
+          </div>
+        </label>
+      </div>
+
+      <button id="exportBtn" class="export-btn" onclick="startExport()">Export to JSON</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <div class="footer">
+    Powered by <span class="footer-accent">AceSheets</span>
+  </div>
+
+  <script>
+    // ── Row limit controls ──
+    var rowLimitInput = document.getElementById('rowLimitInput');
+    var rowLimitBadge = document.getElementById('rowLimitBadge');
+
+    function setRowLimit(n) {
+      rowLimitInput.value = n;
+      updateRowBadge();
+    }
+
+    function updateRowBadge() {
+      var v = parseInt(rowLimitInput.value, 10);
+      if (isNaN(v) || v < 1) { rowLimitInput.value = 1; v = 1; }
+      if (v > 10000) { rowLimitInput.value = 10000; v = 10000; }
+      rowLimitBadge.textContent = v >= 1000 ? (v / 1000) + 'k rows' : v + ' rows';
+    }
+
+    rowLimitInput.addEventListener('input', updateRowBadge);
+
+    // ── Toggle card states ──
+    document.querySelectorAll('.option-card').forEach(function (card) {
+      var cb = card.querySelector('input[type="checkbox"]');
+      cb.addEventListener('change', function () {
+        card.classList.toggle('checked', cb.checked);
+        if (cb.id === 'chkDataValidation') {
+          document.getElementById('dvCaution').style.display = cb.checked ? 'flex' : 'none';
+        }
+      });
+    });
+
+    function startExport() {
+      var btn = document.getElementById('exportBtn');
+      var statusDiv = document.getElementById('status');
+
+      var rowLimit = parseInt(rowLimitInput.value, 10);
+      if (isNaN(rowLimit) || rowLimit < 1) rowLimit = 100;
+
+      var includeHeaders = document.getElementById('chkHeaders').checked;
+
+      var options = {
+        rowLimit: rowLimit,
+        namedRanges: document.getElementById('chkNamedRanges').checked,
+        formulas: document.getElementById('chkFormulas').checked,
+        crossSheetDeps: document.getElementById('chkFormulas').checked,
+        dataValidation: document.getElementById('chkDataValidation').checked,
+        conditionalFormatting: document.getElementById('chkCondFormat').checked,
+        charts: document.getElementById('chkCharts').checked,
+        headers: includeHeaders,
+        sampleData: includeHeaders,
+        mergedCells: document.getElementById('chkMergedCells').checked,
+        sheetMetadata: document.getElementById('chkSheetMeta').checked,
+        numberFormats: document.getElementById('chkNumberFormats').checked,
+        notes: document.getElementById('chkNotes').checked,
+        downloadXlsx: document.getElementById('chkDownloadXlsx').checked
+      };
+
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.innerHTML = '<span class="spinner"></span>Exporting\u2026';
+      statusDiv.innerHTML = '<div class="status-box status-loading">Analyzing spreadsheet\u2026 this may take a moment.</div>';
+
+      google.script.run
+        .withSuccessHandler(onSuccess)
+        .withFailureHandler(onFailure)
+        .exportArchitecture(options);
+    }
+
+    function onSuccess(response) {
+      var btn = document.getElementById('exportBtn');
+      var statusDiv = document.getElementById('status');
+
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.innerHTML = 'Export to JSON';
+
+      if (response.success) {
+        var blob = new Blob([response.content], { type: 'application/json' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = response.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        var xlsxHtml = '';
+        if (response.xlsxUrl) {
+          window.open(response.xlsxUrl, '_blank');
+          xlsxHtml = '<a class="drive-link" href="' + (response.xlsxDriveUrl || response.xlsxUrl) + '" target="_blank">View Excel in Drive \u2192</a><br>';
+        } else if (response.xlsxError) {
+          xlsxHtml = '<div style="font-size:11px;color:#D4860B;margin-top:4px;">\u26A0 Excel export failed: ' + response.xlsxError + '</div>';
+        }
+
+        statusDiv.innerHTML =
+          '<div class="status-box status-success">' +
+          '<div class="status-title">\u2705 Export complete</div>' +
+          '<div class="file-name">' + response.name + '</div>' +
+          '<a class="drive-link" href="' + response.url + '" target="_blank">Open JSON in Drive \u2192</a><br>' +
+          xlsxHtml +
+          '</div>';
+      } else {
+        statusDiv.innerHTML =
+          '<div class="status-box status-error">' +
+          '<div class="status-title">Export failed</div>' +
+          response.error +
+          '</div>';
+      }
+    }
+
+    function onFailure(error) {
+      var btn = document.getElementById('exportBtn');
+      var statusDiv = document.getElementById('status');
+
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.innerHTML = 'Export to JSON';
+
+      statusDiv.innerHTML =
+        '<div class="status-box status-error">' +
+        '<div class="status-title">Server error</div>' +
+        error.message +
+        '</div>';
+    }
+  </script>
+</body>
+
+</html>
