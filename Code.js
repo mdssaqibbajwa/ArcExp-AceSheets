@@ -25,6 +25,24 @@ function showSidebar() {
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
+/**
+ * Returns metadata for all sheets in the active spreadsheet.
+ * Called by the sidebar on load to populate the sheet selector.
+ */
+function getSheetNames() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var result = [];
+  for (var i = 0; i < sheets.length; i++) {
+    result.push({
+      name: sheets[i].getName(),
+      index: sheets[i].getIndex(),
+      isHidden: sheets[i].isSheetHidden()
+    });
+  }
+  return result;
+}
+
 /* ══════════════════════════════════════════
    HELPERS
    ══════════════════════════════════════════ */
@@ -222,6 +240,16 @@ function exportArchitecture(options) {
 
     var sheets = ss.getSheets();
 
+    // Filter to selected sheets if provided
+    var selectedSheets = (Array.isArray(options.selectedSheets) && options.selectedSheets.length > 0)
+      ? options.selectedSheets
+      : null;
+    if (selectedSheets) {
+      sheets = sheets.filter(function (sh) {
+        return selectedSheets.indexOf(sh.getName()) !== -1;
+      });
+    }
+
     for (var s = 0; s < sheets.length; s++) {
       var sheet = sheets[s];
       var sheetName = sheet.getName();
@@ -234,7 +262,7 @@ function exportArchitecture(options) {
         det.metadata = {
           index: sheet.getIndex(),
           isHidden: sheet.isSheetHidden(),
-          tabColor: sheet.getTabColor(),
+          //tabColor: sheet.getTabColor(),    // I don't think it has any significance. SB
           frozenRows: sheet.getFrozenRows(),
           frozenColumns: sheet.getFrozenColumns(),
           maxRows: sheet.getMaxRows(),
@@ -547,7 +575,8 @@ function exportArchitecture(options) {
 
     // ── File Generation ──
     var jsonOutput = JSON.stringify(architecture, null, 2);
-    var timestamp = Utilities.formatDate(new Date(), 'America/Toronto', 'yyyy-MM-dd-HH-mm-ss');
+    //var timestamp = Utilities.formatDate(new Date(), 'America/Toronto', 'yyyy-MM-dd-HH-mm-ss');
+    var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd-HH-mm-ss');
     var fileName = ss.getName() + '-' + timestamp + '.json';
 
     var folderName = 'ArchEx Output';

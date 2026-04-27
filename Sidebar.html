@@ -473,6 +473,181 @@
       color: var(--green);
       font-weight: 600;
     }
+
+    /* ── Sheet Selector ── */
+    .sheet-selector-loading {
+      font-size: 12px;
+      color: var(--gray-400);
+      font-style: italic;
+      padding: 6px 0;
+    }
+
+    .sheets-batch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .sheets-count {
+      font-size: 11.5px;
+      color: var(--gray-400);
+    }
+
+    .sheets-count strong {
+      color: var(--gray-600);
+      font-weight: 600;
+    }
+
+    .sheets-batch-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .sheet-batch-btn {
+      padding: 4px 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.12s;
+    }
+
+    .sheet-batch-btn-outline {
+      background: var(--white);
+      border-color: var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    .sheet-batch-btn-outline:hover {
+      border-color: var(--green);
+      color: var(--green-dark);
+      background: var(--green-light);
+    }
+
+    .sheet-batch-btn-fill {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green-dark);
+    }
+
+    .sheet-batch-btn-fill:hover {
+      background: #c8e9d0;
+    }
+
+    .mini-sheet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .mini-sheet-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 7px 9px;
+      border-radius: 8px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .mini-sheet-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+
+    .mini-sheet-card.checked {
+      background: var(--green-light);
+      border-color: var(--green);
+    }
+
+    .mini-sheet-top {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 4px;
+    }
+
+    .mini-sheet-name {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--gray-800);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-sheet-card.checked .mini-sheet-name {
+      color: var(--green-dark);
+    }
+
+    .mini-sheet-checkmark {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      border-radius: 3px;
+      border: 2px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .mini-sheet-card.checked .mini-sheet-checkmark {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .mini-sheet-checkmark svg {
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .mini-sheet-card.checked .mini-sheet-checkmark svg {
+      opacity: 1;
+    }
+
+    .mini-sheet-sub {
+      font-size: 10px;
+      color: var(--gray-400);
+      margin-top: 3px;
+    }
+
+    .mini-sheet-card.checked .mini-sheet-sub {
+      color: var(--green);
+    }
+
+    .mini-sheet-hidden-badge {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+
+    .no-sheets-warning {
+      font-size: 11.5px;
+      color: var(--orange);
+      background: var(--orange-light);
+      border: 1px solid rgba(232, 96, 44, 0.2);
+      border-radius: 7px;
+      padding: 8px 10px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ── End of Sheet Selector ── */
   </style>
 </head>
 
@@ -604,6 +779,12 @@
       </label>
 
     </div>
+    <!-- ── Caution box for data validation moved here -->
+    <div class="caution-box" id="dvCaution">
+      <span class="caution-icon">&#9888;</span>
+      <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
+        Script limitations. All other options are fast.</span>
+    </div>
 
     <div class="section-divider"></div>
 
@@ -648,13 +829,18 @@
 
     </div>
 
-    <!-- ── Caution + Extras + Button ── -->
+    <!-- ── SHEETS TO EXPORT ── -->
+    <div class="section-divider"></div>
+    <div class="section-label">Sheets to Export</div>
+    <div id="sheetSelectorWrap">
+      <div class="sheet-selector-loading">Loading sheets&hellip;</div>
+    </div>
+    <div class="no-sheets-warning" id="noSheetsWarning">
+      &#9888; Select at least one sheet to export.
+    </div>
+
+    <!-- Extras + Button -->
     <div class="btn-area">
-      <div class="caution-box" id="dvCaution">
-        <span class="caution-icon">&#9888;</span>
-        <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
-          Script limitations. All other options are fast.</span>
-      </div>
 
       <div class="section-divider"></div>
 
@@ -714,9 +900,108 @@
       });
     });
 
+    // ── Sheet Selector ──
+    function loadSheets() {
+      google.script.run
+        .withSuccessHandler(renderSheets)
+        .withFailureHandler(function () {
+          document.getElementById('sheetSelectorWrap').innerHTML =
+            '<div class="sheet-selector-loading">Could not load sheets.</div>';
+        })
+        .getSheetNames();
+    }
+
+    function renderSheets(sheets) {
+      var wrap = document.getElementById('sheetSelectorWrap');
+      if (!sheets || sheets.length === 0) {
+        wrap.innerHTML = '<div class="sheet-selector-loading">No sheets found.</div>';
+        return;
+      }
+
+      var totalCount = sheets.length;
+      var html = '<div class="sheets-batch-row">' +
+        '<span class="sheets-count" id="sheetsCount"><strong>' + totalCount + ' of ' + totalCount + '</strong> selected</span>' +
+        '<div class="sheets-batch-btns">' +
+        '<button class="sheet-batch-btn sheet-batch-btn-outline" onclick="setAllSheets(false)">Uncheck all</button>' +
+        '<button class="sheet-batch-btn sheet-batch-btn-fill" onclick="setAllSheets(true)">Check all</button>' +
+        '</div>' +
+        '</div>' +
+        '<div class="mini-sheet-grid" id="miniSheetGrid">';
+
+      for (var i = 0; i < sheets.length; i++) {
+        var s = sheets[i];
+        var hiddenBadge = s.isHidden
+          ? '<span class="mini-sheet-hidden-badge">hidden</span>'
+          : '';
+        html +=
+          '<div class="mini-sheet-card checked" data-sheet="' + escAttr(s.name) + '" onclick="toggleSheet(this)">' +
+          '<div class="mini-sheet-top">' +
+          '<span class="mini-sheet-name" title="' + escAttr(s.name) + '">' + escHtml(s.name) + '</span>' +
+          hiddenBadge +
+          '<div class="mini-sheet-checkmark">' +
+          '<svg width="9" height="9" viewBox="0 0 9 9" fill="none">' +
+          '<path d="M1.5 4.5L3.7 7L8 2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>' +
+          '</div>' +
+          '</div>' +
+          '<span class="mini-sheet-sub">Tab ' + s.index + '</span>' +
+          '</div>';
+      }
+
+      html += '</div>';
+      wrap.innerHTML = html;
+      updateSheetsCount();
+    }
+
+    function toggleSheet(card) {
+      card.classList.toggle('checked');
+      updateSheetsCount();
+    }
+
+    function setAllSheets(state) {
+      var cards = document.querySelectorAll('#miniSheetGrid .mini-sheet-card');
+      cards.forEach(function (c) {
+        if (state) c.classList.add('checked');
+        else c.classList.remove('checked');
+      });
+      updateSheetsCount();
+    }
+
+    function updateSheetsCount() {
+      var all = document.querySelectorAll('#miniSheetGrid .mini-sheet-card').length;
+      var checked = document.querySelectorAll('#miniSheetGrid .mini-sheet-card.checked').length;
+      var el = document.getElementById('sheetsCount');
+      if (el) el.innerHTML = '<strong>' + checked + ' of ' + all + '</strong> selected';
+    }
+
+    function getSelectedSheets() {
+      var cards = document.querySelectorAll('#miniSheetGrid .mini-sheet-card.checked');
+      var names = [];
+      cards.forEach(function (c) { names.push(c.getAttribute('data-sheet')); });
+      return names;
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function escAttr(str) {
+      return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // Load sheets when sidebar opens
+    loadSheets();
+    // ── End of Sheet Selector ──
     function startExport() {
       var btn = document.getElementById('exportBtn');
       var statusDiv = document.getElementById('status');
+      var warning = document.getElementById('noSheetsWarning');
+
+      var selectedSheets = getSelectedSheets();
+      if (selectedSheets.length === 0) {
+        warning.style.display = 'block';
+        return;
+      }
+      warning.style.display = 'none';
 
       var rowLimit = parseInt(rowLimitInput.value, 10);
       if (isNaN(rowLimit) || rowLimit < 1) rowLimit = 100;
@@ -725,6 +1010,7 @@
 
       var options = {
         rowLimit: rowLimit,
+        selectedSheets: selectedSheets,
         namedRanges: document.getElementById('chkNamedRanges').checked,
         formulas: document.getElementById('chkFormulas').checked,
         crossSheetDeps: document.getElementById('chkFormulas').checked,
