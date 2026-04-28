@@ -586,6 +586,18 @@ function exportArchitecture(options) {
 
     var result = { success: true, url: file.getUrl(), name: fileName, content: jsonOutput };
 
+    // ── Optional: Export Apps Script code to Google Doc ──
+    if (options.exportAppsScript && options.scriptId) {
+      var asResult = codeExporter(options.scriptId, ss.getName(), folder);
+      if (asResult.success) {
+        result.appsScriptDocUrl = asResult.docUrl;
+        result.appsScriptDocName = asResult.docName;
+        result.appsScriptContent = asResult.appsScriptContent;  // [NEW] pass through for .txt download
+      } else {
+        result.appsScriptError = asResult.error;
+      }
+    }
+
     // ── Optional: Download spreadsheet as Excel ──
     if (options.downloadXlsx) {
       try {

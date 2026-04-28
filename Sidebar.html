@@ -474,6 +474,71 @@
       font-weight: 600;
     }
 
+    /* ── Apps Script Export Section ── */
+    .script-id-wrap {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease, margin-top 0.2s ease;
+      margin-top: 0;
+    }
+
+    .script-id-wrap.visible {
+      max-height: 100px;
+      opacity: 1;
+      margin-top: 8px;
+    }
+
+    .script-id-inner {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+    }
+
+    .script-id-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 5px;
+    }
+
+    .script-id-input {
+      width: 100%;
+      padding: 7px 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .script-id-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+
+    .script-id-input::placeholder {
+      color: var(--gray-400);
+    }
+
+    .script-id-hint {
+      font-size: 10px;
+      color: var(--gray-400);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .script-id-error {
+      font-size: 10.5px;
+      color: var(--orange);
+      margin-top: 5px;
+      display: none;
+    }
+
     /* ── Sheet Selector ── */
     .sheet-selector-loading {
       font-size: 12px;
@@ -829,6 +894,31 @@
 
     </div>
 
+    <!-- ── APPS SCRIPT EXPORT ── -->
+    <div class="section-divider"></div>
+    <div class="section-label">Apps Script</div>
+    <div class="options-list" style="margin-bottom:0;">
+      <label class="option-card" id="card-exportAppsScript">
+        <input type="checkbox" id="chkExportAppsScript">
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Save Apps Script Code <span class="badge badge-green">Doc</span></div>
+          <div class="option-hint">Export all .gs &amp; .json files to a Google Doc in ArchEx Output</div>
+        </div>
+      </label>
+    </div>
+    <div class="script-id-wrap" id="scriptIdWrap">
+      <div class="script-id-inner">
+        <div class="script-id-label">Script ID</div>
+        <input type="text" id="scriptIdInput" class="script-id-input" placeholder="e.g. 1BxFg_abc123…">
+        <div class="script-id-hint">Find it in Apps Script editor &rarr; Project Settings &rarr; Script ID</div>
+        <div class="script-id-error" id="scriptIdError">&#9888; Please enter a Script ID before exporting.</div>
+      </div>
+    </div>
+
     <!-- ── SHEETS TO EXPORT ── -->
     <div class="section-divider"></div>
     <div class="section-label">Sheets to Export</div>
@@ -896,6 +986,13 @@
         card.classList.toggle('checked', cb.checked);
         if (cb.id === 'chkDataValidation') {
           document.getElementById('dvCaution').style.display = cb.checked ? 'flex' : 'none';
+        }
+        if (cb.id === 'chkExportAppsScript') {
+          var wrap = document.getElementById('scriptIdWrap');
+          wrap.classList.toggle('visible', cb.checked);
+          if (!cb.checked) {
+            document.getElementById('scriptIdError').style.display = 'none';
+          }
         }
       });
     });
@@ -994,6 +1091,19 @@
     function startExport() {
       var btn = document.getElementById('exportBtn');
       var statusDiv = document.getElementById('status');
+
+      // Validate: Apps Script Script ID
+      var exportAppsScript = document.getElementById('chkExportAppsScript').checked;
+      var scriptId = document.getElementById('scriptIdInput').value.trim();
+      var scriptIdError = document.getElementById('scriptIdError');
+      if (exportAppsScript && !scriptId) {
+        scriptIdError.style.display = 'block';
+        document.getElementById('scriptIdInput').focus();
+        return;
+      }
+      scriptIdError.style.display = 'none';
+
+      // Validate: at least one sheet selected
       var warning = document.getElementById('noSheetsWarning');
 
       var selectedSheets = getSelectedSheets();
@@ -1011,6 +1121,8 @@
       var options = {
         rowLimit: rowLimit,
         selectedSheets: selectedSheets,
+        exportAppsScript: exportAppsScript,
+        scriptId: scriptId,
         namedRanges: document.getElementById('chkNamedRanges').checked,
         formulas: document.getElementById('chkFormulas').checked,
         crossSheetDeps: document.getElementById('chkFormulas').checked,
@@ -1054,6 +1166,18 @@
         link.click();
         document.body.removeChild(link);
 
+        // [DOWNLOAD CODE AS TEXT] Trigger .txt download if Apps Script export succeeded and content is present
+        if (response.appsScriptDocUrl && response.appsScriptContent) {
+          var asBlob = new Blob([response.appsScriptContent], { type: 'text/plain' });
+          var asLink = document.createElement('a');
+          asLink.href = URL.createObjectURL(asBlob);
+          // [NEW] Filename: "Apps Script - {spreadsheet-timestamp-stem}.txt"
+          asLink.download = 'Apps Script - ' + response.name.replace(/\.json$/, '') + '.txt';
+          document.body.appendChild(asLink);
+          asLink.click();
+          document.body.removeChild(asLink);
+        }
+
         var xlsxHtml = '';
         if (response.xlsxUrl) {
           window.open(response.xlsxUrl, '_blank');
@@ -1062,11 +1186,21 @@
           xlsxHtml = '<div style="font-size:11px;color:#D4860B;margin-top:4px;">\u26A0 Excel export failed: ' + response.xlsxError + '</div>';
         }
 
+        var asHtml = '';
+        if (response.appsScriptDocUrl) {
+          // Label clarified to reflect both Doc saved and .txt downloaded
+          asHtml = '<a class="drive-link" href="' + response.appsScriptDocUrl + '" target="_blank">Open Script Doc in Drive &rarr;</a><br>';
+        } else if (response.appsScriptError) {
+          asHtml = '<div style="font-size:11px;color:#D4860B;margin-top:4px;">&#9888; Apps Script export failed: ' + response.appsScriptError + '</div>';
+        }
+
         statusDiv.innerHTML =
           '<div class="status-box status-success">' +
           '<div class="status-title">\u2705 Export complete</div>' +
           '<div class="file-name">' + response.name + '</div>' +
           '<a class="drive-link" href="' + response.url + '" target="_blank">Open JSON in Drive \u2192</a><br>' +
+          '<div class="file-name">' + response.appsScriptDocName + '</div>' +
+          asHtml +
           xlsxHtml +
           '</div>';
       } else {
