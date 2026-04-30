@@ -31,21 +31,11 @@ function codeExporter(scriptId, projectName, destinationFolder) {
         }
 
         Logger.log(`Creating Google Doc for project: "${projectName}"`);
-        const docName = `Apps Script Export - ${projectName}`;
+        const docName = `Apps Script Code - ${projectName}`;
         const doc = DocumentApp.create(docName);
         const body = doc.getBody();
 
-        // const headerStyle = {};
-        // headerStyle[DocumentApp.Attribute.BOLD] = true;
-        // headerStyle[DocumentApp.Attribute.FONT_SIZE] = 14;
-        // headerStyle[DocumentApp.Attribute.FOREGROUND_COLOR] = '#666666';
-
-        // const codeStyle = {};
-        // codeStyle[DocumentApp.Attribute.FONT_FAMILY] = DocumentApp.FontFamily.CONSOLAS;
-        // codeStyle[DocumentApp.Attribute.FONT_SIZE] = 10;
-        //codeStyle[DocumentApp.Attribute.BACKGROUND_COLOR] = '#f3f3f3';
-
-        // NEW styles with improved readability and visual hierarchy
+        // New styles with improved design
         var headerStyle = {};
         headerStyle[DocumentApp.Attribute.BOLD] = true;
         headerStyle[DocumentApp.Attribute.ITALIC] = true;
@@ -64,13 +54,11 @@ function codeExporter(scriptId, projectName, destinationFolder) {
         codeStyle[DocumentApp.Attribute.SPACING_BEFORE] = 2;
         codeStyle[DocumentApp.Attribute.SPACING_AFTER] = 0;
 
-        // [NEW] Accumulates plain-text content for client-side .txt download
+        // [DOWNLOAD CODE AS TEXT] Accumulates plain-text content for client-side .txt download
         var textLines = [];
         content.files.forEach(file => {
-            //var file = content.files[f];
             var ext = file.type === 'SERVER_JS' ? 'gs' : 'json';
 
-            Logger.log(`Appending file: "${file.name}.${file.type === 'SERVER_JS' ? 'gs' : 'json'}"`);
             body.appendParagraph(`// FILE: ${file.name}.${file.type === 'SERVER_JS' ? 'gs' : 'json'}`)
                 .setAttributes(headerStyle);
 
@@ -78,7 +66,7 @@ function codeExporter(scriptId, projectName, destinationFolder) {
             codeBlock.setAttributes(codeStyle);
             body.appendParagraph('');
 
-            // [NEW] Mirror each file into the plain-text accumulator
+            // [DOWNLOAD CODE AS TEXT] Mirror each file into the plain-text accumulator
             textLines.push('// FILE: ' + file.name + '.' + ext);
             textLines.push(file.source);
             textLines.push('');
@@ -89,16 +77,13 @@ function codeExporter(scriptId, projectName, destinationFolder) {
         docFile.moveTo(destinationFolder);
 
         Logger.log(`Successfully created and moved document: ${docFile.getName()} (ID: ${docFile.getId()})`);
-        // [UPDATED] Added appsScriptContent to return value for client-side .txt download
+
         return {
             success: true,
             docUrl: docFile.getUrl(),
             docName: docFile.getName(),
-            appsScriptContent: textLines.join('\n')  // [NEW]
+            appsScriptContent: textLines.join('\n')  // [DOWNLOAD CODE AS TEXT]
         };
-
-
-        //return { success: true, docUrl: docFile.getUrl(), docName: docFile.getName() };
 
     } catch (e) {
         Logger.log(`CRITICAL ERROR exporting project "${projectName}" (ID: ${scriptId}). Error: ${e.toString()}`);

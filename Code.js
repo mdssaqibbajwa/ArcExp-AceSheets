@@ -588,13 +588,13 @@ function exportArchitecture(options) {
 
     // ── Optional: Export Apps Script code to Google Doc ──
     if (options.exportAppsScript && options.scriptId) {
-      var asResult = codeExporter(options.scriptId, ss.getName(), folder);
-      if (asResult.success) {
-        result.appsScriptDocUrl = asResult.docUrl;
-        result.appsScriptDocName = asResult.docName;
-        result.appsScriptContent = asResult.appsScriptContent;  // [NEW] pass through for .txt download
+      var codeResult = codeExporter(options.scriptId, ss.getName(), folder);
+      if (codeResult.success) {
+        result.appsScriptDocUrl = codeResult.docUrl;
+        result.appsScriptDocName = codeResult.docName;
+        result.appsScriptContent = codeResult.appsScriptContent;  // [DOWNLOAD CODE AS TEXT] pass through for .txt download
       } else {
-        result.appsScriptError = asResult.error;
+        result.appsScriptError = codeResult.error;
       }
     }
 

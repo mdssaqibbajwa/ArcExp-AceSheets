@@ -1171,8 +1171,7 @@
           var asBlob = new Blob([response.appsScriptContent], { type: 'text/plain' });
           var asLink = document.createElement('a');
           asLink.href = URL.createObjectURL(asBlob);
-          // [NEW] Filename: "Apps Script - {spreadsheet-timestamp-stem}.txt"
-          asLink.download = 'Apps Script - ' + response.name.replace(/\.json$/, '') + '.txt';
+          asLink.download = 'Apps Script Code - ' + response.name.replace(/\.json$/, '') + '.txt';
           document.body.appendChild(asLink);
           asLink.click();
           document.body.removeChild(asLink);
