@@ -604,7 +604,7 @@
 
     .mini-sheet-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 5px;
     }
 
@@ -644,9 +644,6 @@
       color: var(--gray-800);
       flex: 1;
       min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .mini-sheet-card.checked .mini-sheet-name {
