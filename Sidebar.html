@@ -843,6 +843,13 @@
 
     </div>
 
+    <!-- ── Caution box for data validation moved here -->
+    <div class="caution-box" id="dvCaution">
+      <span class="caution-icon">&#9888;</span>
+      <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
+        Script limitations. All other options are fast.</span>
+    </div>
+
     <div class="section-divider"></div>
 
     <!-- ── VISUALS ── -->
@@ -947,36 +954,29 @@
       &#9888; Select at least one sheet to export.
     </div>
 
-    <!-- ── Caution + Extras + Button ── -->
-    <div class="btn-area">
-      <div class="caution-box" id="dvCaution">
-        <span class="caution-icon">&#9888;</span>
-        <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
-          Script limitations. All other options are fast.</span>
-      </div>
+    <!-- ── Extras + Button ── -->
+    <div class="section-divider"></div>
 
-      <div class="section-divider"></div>
-
-      <!-- ── EXTRAS ── -->
-      <div class="section-label">Extras</div>
-      <div class="options-list" style="margin-bottom:16px;">
-        <label class="option-card" id="card-downloadXlsx">
-          <input type="checkbox" id="chkDownloadXlsx">
-          <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg></div>
-          <div class="option-text">
-            <div class="option-name">Download as Excel</div>
-            <div class="option-hint">Also save a .xlsx copy alongside the JSON export</div>
-          </div>
-        </label>
-      </div>
-
-      <button id="exportBtn" class="export-btn" onclick="startExport()">Export to JSON</button>
+    <!-- ── EXTRAS ── -->
+    <div class="section-label">Extras</div>
+    <div class="options-list" style="margin-bottom:16px;">
+      <label class="option-card" id="card-downloadXlsx">
+        <input type="checkbox" id="chkDownloadXlsx">
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Download as Excel</div>
+          <div class="option-hint">Also save a .xlsx copy alongside the JSON export</div>
+        </div>
+      </label>
     </div>
 
-    <div id="status"></div>
+    <button id="exportBtn" class="export-btn" onclick="startExport()">Export to JSON</button>
+  </div>
+
+  <div id="status"></div>
   </div>
 
   <div class="footer">
