@@ -306,9 +306,9 @@ function exportArchitecture(options) {
         }
       }
 
-      // ── Sample Data (first 5 data rows after header) ──
+      // ── Sample data up to rowLimit rows──
       if (options.sampleData && numRows > 1 && numCols > 0) {
-        var sampleRowCount = Math.min(5, numRows - 1);
+        var sampleRowCount = Math.min(rowLimit, numRows - 1);
         var sampleRange = sheet.getRange(startRow + 1, startCol, sampleRowCount, numCols);
         var sampleValues = sampleRange.getValues();
         det.sampleData = {
@@ -327,6 +327,9 @@ function exportArchitecture(options) {
           if (Object.keys(rowObj).length > 0) {
             det.sampleData.rows.push(rowObj);
           }
+        }
+        if (sampleRowCount < numRows) {
+          det.sampleDataScanNote = 'Scanned rows 2-' + sampleRowCount + ' of ' + numRows + ' total';
         }
       }
 
@@ -417,7 +420,7 @@ function exportArchitecture(options) {
           }
         }
         if (scanRows < numRows) {
-          det.formulasScanNote = 'Scanned rows 1–' + scanRows + ' of ' + numRows + ' total';
+          det.formulasScanNote = 'Scanned rows 1-' + scanRows + ' of ' + numRows + ' total';
         }
       }
 
@@ -486,7 +489,7 @@ function exportArchitecture(options) {
           }
 
           if (dvScanRows < numRows) {
-            det.dataValidationScanNote = 'Scanned rows 1–' + dvScanRows + ' of ' + numRows + ' total';
+            det.dataValidationScanNote = 'Scanned rows 1-' + dvScanRows + ' of ' + numRows + ' total';
           }
         }
       }
