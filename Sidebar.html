@@ -842,12 +842,6 @@
       </label>
 
     </div>
-    <!-- ── Caution box for data validation moved here -->
-    <div class="caution-box" id="dvCaution">
-      <span class="caution-icon">&#9888;</span>
-      <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
-        Script limitations. All other options are fast.</span>
-    </div>
 
     <div class="section-divider"></div>
 
@@ -917,6 +911,32 @@
       </div>
     </div>
 
+    <!-- ── GOOGLE FORMS ── -->
+    <div class="section-divider"></div>
+    <div class="section-label">Google Forms</div>
+    <div class="options-list" style="margin-bottom:0;">
+      <label class="option-card" id="card-exportForm">
+        <input type="checkbox" id="chkExportForm">
+        <div class="checkmark"><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="option-text">
+          <div class="option-name">Export Form to JSON <span class="badge badge-green">JSON</span></div>
+          <div class="option-hint">Save form structure as .json to Drive and download locally</div>
+        </div>
+      </label>
+    </div>
+    <!-- Collapsible Form ID input — same pattern as Apps Script section -->
+    <div class="script-id-wrap" id="formIdWrap">
+      <div class="script-id-inner">
+        <div class="script-id-label">Form ID</div>
+        <input type="text" id="formIdInput" class="script-id-input" placeholder="e.g. 1FAIpQLSe_abc123…">
+        <div class="script-id-hint">Find it in the Google Form URL: /forms/d/<strong>{Form ID}</strong>/edit</div>
+        <div class="script-id-error" id="formIdError">&#9888; Please enter a Form ID before exporting.</div>
+      </div>
+    </div>
+
     <!-- ── SHEETS TO EXPORT ── -->
     <div class="section-divider"></div>
     <div class="section-label">Sheets to Export</div>
@@ -927,8 +947,13 @@
       &#9888; Select at least one sheet to export.
     </div>
 
-    <!-- Extras + Button -->
+    <!-- ── Caution + Extras + Button ── -->
     <div class="btn-area">
+      <div class="caution-box" id="dvCaution">
+        <span class="caution-icon">&#9888;</span>
+        <span><strong>Data Validation</strong> can take significantly longer than other options due to Google Apps
+          Script limitations. All other options are fast.</span>
+      </div>
 
       <div class="section-divider"></div>
 
@@ -990,6 +1015,14 @@
           wrap.classList.toggle('visible', cb.checked);
           if (!cb.checked) {
             document.getElementById('scriptIdError').style.display = 'none';
+          }
+        }
+        // Toggle Form ID input visibility
+        if (cb.id === 'chkExportForm') {
+          var formWrap = document.getElementById('formIdWrap');
+          formWrap.classList.toggle('visible', cb.checked);
+          if (!cb.checked) {
+            document.getElementById('formIdError').style.display = 'none';
           }
         }
       });
@@ -1101,15 +1134,25 @@
       }
       scriptIdError.style.display = 'none';
 
-      // Validate: at least one sheet selected
-      var warning = document.getElementById('noSheetsWarning');
-
-      var selectedSheets = getSelectedSheets();
-      if (selectedSheets.length === 0) {
-        warning.style.display = 'block';
+      // Validate: Google Form ID
+      var exportForm = document.getElementById('chkExportForm').checked;
+      var formId = document.getElementById('formIdInput').value.trim();
+      var formIdError = document.getElementById('formIdError');
+      if (exportForm && !formId) {
+        formIdError.style.display = 'block';
+        document.getElementById('formIdInput').focus();
         return;
       }
-      warning.style.display = 'none';
+      formIdError.style.display = 'none';
+
+      // Validate: at least one sheet selected
+      var selectedSheets = getSelectedSheets();
+      var noSheetsWarning = document.getElementById('noSheetsWarning');
+      if (selectedSheets.length === 0) {
+        noSheetsWarning.style.display = 'block';
+        return;
+      }
+      noSheetsWarning.style.display = 'none';
 
       var rowLimit = parseInt(rowLimitInput.value, 10);
       if (isNaN(rowLimit) || rowLimit < 1) rowLimit = 100;
@@ -1121,6 +1164,8 @@
         selectedSheets: selectedSheets,
         exportAppsScript: exportAppsScript,
         scriptId: scriptId,
+        exportForm: exportForm,
+        formId: formId,
         namedRanges: document.getElementById('chkNamedRanges').checked,
         formulas: document.getElementById('chkFormulas').checked,
         crossSheetDeps: document.getElementById('chkFormulas').checked,
@@ -1175,6 +1220,18 @@
           document.body.removeChild(asLink);
         }
 
+        // Trigger .json download if Google Form export succeeded
+        if (response.formUrl && response.formJsonContent) {
+          var formBlob = new Blob([response.formJsonContent], { type: 'application/json' });
+          var formLink = document.createElement('a');
+          formLink.href = URL.createObjectURL(formBlob);
+          // Filename: "Form - {spreadsheet-timestamp-stem}.json"
+          formLink.download = 'Google Form - ' + response.name.replace(/\.json$/, '') + '.json';
+          document.body.appendChild(formLink);
+          formLink.click();
+          document.body.removeChild(formLink);
+        }
+
         var xlsxHtml = '';
         if (response.xlsxUrl) {
           window.open(response.xlsxUrl, '_blank');
@@ -1191,6 +1248,14 @@
           asHtml = '<div style="font-size:11px;color:#D4860B;margin-top:4px;">&#9888; Apps Script export failed: ' + response.appsScriptError + '</div>';
         }
 
+        // Google Form export Drive link or error
+        var formHtml = '';
+        if (response.formUrl) {
+          formHtml = '<a class="drive-link" href="' + response.formUrl + '" target="_blank">Open Form JSON in Drive &rarr;</a><br>';
+        } else if (response.formError) {
+          formHtml = '<div style="font-size:11px;color:#D4860B;margin-top:4px;">&#9888; Form export failed: ' + response.formError + '</div>';
+        }
+
         statusDiv.innerHTML =
           '<div class="status-box status-success">' +
           '<div class="status-title">\u2705 Export complete</div>' +
@@ -1198,6 +1263,7 @@
           '<a class="drive-link" href="' + response.url + '" target="_blank">Open JSON in Drive \u2192</a><br>' +
           '<div class="file-name">' + response.appsScriptDocName + '</div>' +
           asHtml +
+          formHtml +
           xlsxHtml +
           '</div>';
       } else {

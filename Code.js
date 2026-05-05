@@ -591,7 +591,7 @@ function exportArchitecture(options) {
 
     // ── Optional: Export Apps Script code to Google Doc ──
     if (options.exportAppsScript && options.scriptId) {
-      var codeResult = codeExporter(options.scriptId, ss.getName(), folder);
+      var codeResult = codeExporter(options.scriptId, "Apps Script Code - " + ss.getName() + " - " + timestamp, folder);
       if (codeResult.success) {
         result.appsScriptDocUrl = codeResult.docUrl;
         result.appsScriptDocName = codeResult.docName;
@@ -600,6 +600,19 @@ function exportArchitecture(options) {
         result.appsScriptError = codeResult.error;
       }
     }
+
+    // Optional: Export Google Form to JSON ──
+    if (options.exportForm && options.formId) {
+      var formResult = exportFormToJson(options.formId, "Google Form - " + ss.getName() + " - " + timestamp, folder);
+      if (formResult.success) {
+        result.formUrl = formResult.formUrl;
+        result.formName = formResult.formName;
+        result.formJsonContent = formResult.formJsonContent;  // passed to client for .json download
+      } else {
+        result.formError = formResult.error;
+      }
+    }
+
 
     // ── Optional: Download spreadsheet as Excel ──
     if (options.downloadXlsx) {
